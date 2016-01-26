@@ -1,11 +1,13 @@
 package com.mygdx.game;
 
 import android.content.Context;
+import android.view.View;
 
 import com.badlogic.gdx.ApplicationListener;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
+import com.badlogic.gdx.graphics.PerspectiveCamera;
 import com.badlogic.gdx.graphics.VertexAttributes;
 import com.badlogic.gdx.graphics.g3d.Environment;
 import com.badlogic.gdx.graphics.g3d.Material;
@@ -32,16 +34,21 @@ public class Renderer implements ApplicationListener {
     public ModelInstance instance;
     public ModelInstance instance2;
 
-    public LibGDXPerspectiveCamera cam;
+   // public LibGDXPerspectiveCamera cam;
+    public PerspectiveCamera cam;
+    public ButtonClickListener btnListener;
 
+    private float lookX=10f,lookY=10f,lookZ=10f;
     public Renderer(Context context){
+
         this.context=context;
+        btnListener=new ButtonClickListener();
     }
     @Override
     public void create() {
         environment = new Environment();
         environment.set(new ColorAttribute(ColorAttribute.AmbientLight, 0.4f, 0.4f, 0.4f, 1f));
-        environment.add(new DirectionalLight().set(0.8f, 0.8f, 0.8f, -1f, -0.8f, -0.2f));
+        environment.add(new DirectionalLight().set(0.8f, 0.8f, 0.8f, 11f, 12f, 10f));
 
         modelBatch = new ModelBatch();
 
@@ -51,11 +58,13 @@ public class Renderer implements ApplicationListener {
         cam.near = 1f;
         cam.far = 100f;
 */
-        cam=new LibGDXPerspectiveCamera(context,30f,Gdx.graphics.getWidth(),Gdx.graphics.getHeight());
-        cam.far=100f;
+  //      cam=new LibGDXPerspectiveCamera(context,30f,Gdx.graphics.getWidth(),Gdx.graphics.getHeight());
+        cam = new PerspectiveCamera(30, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
+        cam.far=1000f;
         cam.near=1f;
-        cam.position.set(10f,10f,10f);
-        cam.lookAt(0f,0f,0f);
+        cam.position.set(0f,0f,0f);
+        cam.lookAt(10f, 10f, 10f);
+        cam.up.set(0f,1f,0f);
       //  cam.update();
 
         ModelBuilder modelBuilder = new ModelBuilder();
@@ -65,7 +74,7 @@ public class Renderer implements ApplicationListener {
         model = modelBuilder.createBox(5f, 5f, 5f,
                 new Material(ColorAttribute.createDiffuse(Color.GREEN)),
                 VertexAttributes.Usage.Position | VertexAttributes.Usage.Normal);
-        instance = new ModelInstance(model,0f,0f,0f);
+        instance = new ModelInstance(model,10f,0f,10f);
         instance2 = new ModelInstance(arrow,0f,0f,0f);
 
     }
@@ -81,10 +90,11 @@ public class Renderer implements ApplicationListener {
   //      Gdx.gl.glClearColor(0, 0, 0.2f, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT | GL20.GL_DEPTH_BUFFER_BIT);
 
-        cam.render();
+    //    cam.render();
+        cam.update();
         modelBatch.begin(cam);
-     //   modelBatch.render(instance, environment);
-        modelBatch.render(instance2,environment);
+        modelBatch.render(instance, environment);
+     //   modelBatch.render(instance2,environment);
         modelBatch.end();
     }
 
@@ -102,6 +112,43 @@ public class Renderer implements ApplicationListener {
     public void dispose() {
         modelBatch.dispose();
         model.dispose();
-        cam.dispose();
+
     }
+
+    class ButtonClickListener implements View.OnClickListener {
+
+        @Override
+        public void onClick(View v) {
+            switch (v.getId()){
+                case R.id.btn_x_plus:
+                    cam.lookAt(++lookX,lookY,lookZ);
+                    break;
+                case R.id.btn_y_plus:
+                    cam.lookAt(lookX,++lookY,lookZ);
+                    break;
+                case R.id.btn_z_plus:
+                    cam.lookAt(lookX,lookY,++lookZ);
+                    break;
+                case R.id.btn_x_minus:
+                    cam.lookAt(--lookX,lookY,lookZ);
+                    break;
+                case R.id.btn_y_minus:
+                    cam.lookAt(lookX,--lookY,lookZ);
+                    break;
+                case R.id.btn_z_minus:
+                    cam.lookAt(lookX,lookY,--lookZ);
+                    break;
+            }
+            showLookAt();
+
+        }
+    }
+
+    private void showLookAt(){
+        Components.x_view.setText("" + lookX);
+        Components.y_view.setText("" + lookY);
+        Components.z_view.setText("" + lookZ);
+
+    }
+
 }

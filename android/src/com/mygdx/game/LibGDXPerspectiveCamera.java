@@ -34,7 +34,7 @@ public class LibGDXPerspectiveCamera extends PerspectiveCamera {
 
     public void setPosition(float x,float y,float z){
         this.position.set(x, y, z);
-        orientation.setLookAtOffset(x,y,z);
+        orientation.setLookAtOffset(x, y, z);
     }
 
     public void render(){
@@ -43,10 +43,9 @@ public class LibGDXPerspectiveCamera extends PerspectiveCamera {
         upVector = orientation.getUp();
         this.up.set(upVector[0],upVector[1], upVector[2]);
         lookVector = orientation.getLookAt();
-        this.lookAt(lookVector[0],lookVector[1],lookVector[2]);
+        this.lookAt(lookVector[0], lookVector[1], lookVector[2]);
 
     }
-
 
     @Override
     public void update() {

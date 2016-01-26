@@ -108,10 +108,10 @@ public class LibGDXCameraOrientation {
                             lookAt[0] = newLookAt[0] + position[0];
                             lookAt[1] = newLookAt[1] + position[1];
                             lookAt[2] = newLookAt[2] + position[2];
-
                             up = newUp;
                             newLookAt = null;
                             newUp = null;
+                            showLookAt();
                         }
                         clear.release();
                     }
@@ -131,6 +131,16 @@ public class LibGDXCameraOrientation {
         sensorMan.registerListener(listener, sensorLinAcce,
                 SensorManager.SENSOR_DELAY_FASTEST);
 
+    }
+
+    private void showLookAt(){
+        Components.x_view.setText("" + lookAt[0]);
+        Components.y_view.setText("" + lookAt[1]);
+        Components.z_view.setText("" + lookAt[2]);
+
+        Components.up_x_view.setText("" + up[0]);
+        Components.up_y_view.setText("" + up[1]);
+        Components.up_z_view.setText("" + up[2]);
     }
 
     public boolean getStable() {
