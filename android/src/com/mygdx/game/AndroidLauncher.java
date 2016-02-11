@@ -6,18 +6,16 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.FrameLayout;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.badlogic.gdx.backends.android.AndroidApplication;
 import com.badlogic.gdx.backends.android.AndroidApplicationConfiguration;
 
-public class AndroidLauncher extends AndroidApplication {
+public class AndroidLauncher extends AndroidApplication  {
 
-	private Renderer renderer;
+	private MainApplicationRenderer mainApplicationRenderer;
 	private View view;
 	private FrameLayout main;
-	private RelativeLayout controllerView;
 
 	@Override
 	protected void onCreate (Bundle savedInstanceState) {
@@ -35,14 +33,14 @@ public class AndroidLauncher extends AndroidApplication {
 		config.useAccelerometer=false;
 		config.useCompass=false;
 
-		renderer=new Renderer(this);
-		view=initializeForView(renderer,config);
+	//	cvCameraView= (JavaCameraView)findViewById(R.id.java_surface_view);
+	//	cvCameraView.setCvCameraViewListener(this);
+		mainApplicationRenderer =new MainApplicationRenderer(this);
+		view=initializeForView(mainApplicationRenderer,config);
 
 		main=(FrameLayout)findViewById(R.id.main_frame);
 		main.addView(view, 0);
-
-	//	controllerView=(RelativeLayout)findViewById(R.layout.controller);
-		addContentView(LayoutInflater.from(this).inflate(R.layout.controller,null),
+		addContentView(LayoutInflater.from(this).inflate(R.layout.controller, null),
 				new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
 
 		setComponents();
@@ -51,12 +49,12 @@ public class AndroidLauncher extends AndroidApplication {
 	}
 
 	private void setListener() {
-		Components.btn_x_plus.setOnClickListener(renderer.btnListener);
-		Components.btn_y_plus.setOnClickListener(renderer.btnListener);
-		Components.btn_z_plus.setOnClickListener(renderer.btnListener);
-		Components.btn_x_minus.setOnClickListener(renderer.btnListener);
-		Components.btn_y_minus.setOnClickListener(renderer.btnListener);
-		Components.btn_z_minus.setOnClickListener(renderer.btnListener);
+		Components.btn_x_plus.setOnClickListener(mainApplicationRenderer.btnListener);
+		Components.btn_y_plus.setOnClickListener(mainApplicationRenderer.btnListener);
+		Components.btn_z_plus.setOnClickListener(mainApplicationRenderer.btnListener);
+		Components.btn_x_minus.setOnClickListener(mainApplicationRenderer.btnListener);
+		Components.btn_y_minus.setOnClickListener(mainApplicationRenderer.btnListener);
+		Components.btn_z_minus.setOnClickListener(mainApplicationRenderer.btnListener);
 	}
 
 	private void setComponents(){
@@ -77,7 +75,7 @@ public class AndroidLauncher extends AndroidApplication {
 
 	@Override
 	protected void onDestroy() {
-	//	renderer.dispose();
+	//	mainApplicationRenderer.dispose();
 		super.onDestroy();
 	}
 
