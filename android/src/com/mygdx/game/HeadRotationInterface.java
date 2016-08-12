@@ -5,4 +5,6 @@ package com.mygdx.game;
  */
 public interface HeadRotationInterface {
     void onRotationChanged(float[] RotationMat);
+
+    void onQuaternionChanged(float[] Quat);
 }

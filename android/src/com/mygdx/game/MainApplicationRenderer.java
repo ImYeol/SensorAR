@@ -1,6 +1,7 @@
 package com.mygdx.game;
 
 import android.content.Context;
+import android.util.Log;
 import android.view.View;
 
 import com.badlogic.gdx.ApplicationListener;
@@ -22,7 +23,7 @@ import com.badlogic.gdx.graphics.g3d.utils.ModelBuilder;
 /**
  * Created by yeol on 16. 1. 25.
  */
-public class MainApplicationRenderer implements ApplicationListener {
+public class MainApplicationRenderer implements ApplicationListener,ModelCreateListener {
 
     private static final String TAG="MainApplicationRenderer";
     private Context context;
@@ -35,11 +36,18 @@ public class MainApplicationRenderer implements ApplicationListener {
     public ModelInstance instance;
     public AssetManager assets;
 
+    public ModelInstance box;
+
     public LibGDXPerspectiveCamera GDXCam;
     public ButtonClickListener btnListener;
     private boolean loading=false;
 
     private RenderModelList RenderModels;
+
+    private float lookX=10;
+    private float lookY=10;
+    private float lookZ=10;
+
 
     public MainApplicationRenderer(Context context){
 
@@ -52,19 +60,31 @@ public class MainApplicationRenderer implements ApplicationListener {
 
         setEnvironment();
         modelBatch = new ModelBatch();
-        GDXCam=new LibGDXPerspectiveCamera(context,30f,Gdx.graphics.getWidth(),Gdx.graphics.getHeight());
+        GDXCam=new LibGDXPerspectiveCamera(context,40f,Gdx.graphics.getWidth(),Gdx.graphics.getHeight());
         SensorData.getInstance().registerRotationListener(GDXCam);
+        GDXCam.setModelMaker(this);
         RenderModels=new RenderModelList();
         assets = new AssetManager();
         MakeDefaultModels();
-        SensorData.getInstance().startSensing(context);
+    //    SensorData.getInstance().startSensing(context);
     }
 
-    private void MakeDefaultModels(){
+    @Override
+    public void MakeDefaultModels(){
         assets.load("arrow.g3db",Model.class);
         loading=true;
         ModelBuilder modelBuilder = new ModelBuilder();
         model = modelBuilder.createBox(5f, 5f, 5f,
+                new Material(ColorAttribute.createDiffuse(Color.GREEN)),
+                VertexAttributes.Usage.Position | VertexAttributes.Usage.Normal);
+    }
+
+    @Override
+    public void MakeModels(float mx,float my,float mz){
+        assets.load("arrow.g3db",Model.class);
+        loading=true;
+        ModelBuilder modelBuilder = new ModelBuilder();
+        model = modelBuilder.createBox(10f, 10f, 10f,
                 new Material(ColorAttribute.createDiffuse(Color.GREEN)),
                 VertexAttributes.Usage.Position | VertexAttributes.Usage.Normal);
     }
@@ -76,17 +96,25 @@ public class MainApplicationRenderer implements ApplicationListener {
 
     private void doneLoading(){
      //   Log.d(TAG,"doneLoading");
+        float[] modelCoord={0f,1f,1f};
+        //modelCoord=GDXCam.getModelCoord();
         arrow= assets.get("arrow.g3db",Model.class);
         instance= new ModelInstance(arrow);
-        instance.transform.setToTranslation(10f, 10f, 10f);
+        instance.transform.setToTranslation(modelCoord[0], modelCoord[1], modelCoord[2]);
         instance.transform.rotate(0, 1, 0, -20);
         instance.transform.rotate(0, 0, 1, 130);
         instance.transform.rotate(1,0,0,-10);
         instance.transform.rotate(0,1,0,10);
-        instance.transform.scale(2f, 2f, 2f);
+        instance.transform.scale(5f, 5f, 5f);
+
+
+        box= new ModelInstance(model);
 
         RenderModels.add(instance);
+        RenderModels.add(box);
         loading=false;
+        //SensorData.getInstance().startSensing(context);
+        Log.d(TAG,"doneLoading");
     }
 
     @Override
@@ -119,15 +147,17 @@ public class MainApplicationRenderer implements ApplicationListener {
 
     @Override
     public void resume() {
-        if(SensorData.getInstance().IsStarted() == false)
-            SensorData.getInstance().startSensing(context);
+    //    if(SensorData.getInstance().IsStarted() == false)
+    //        SensorData.getInstance().startSensing(context);
+    //    SensorData.getInstance().startSensing(context);
     }
 
     @Override
     public void dispose() {
         modelBatch.dispose();
         arrow.dispose();
-        assets.dispose();
+        SensorData.getInstance().stopSensing();
+    //    assets.dispose();
 
     }
 
@@ -137,31 +167,42 @@ public class MainApplicationRenderer implements ApplicationListener {
         public void onClick(View v) {
             switch (v.getId()){
                 case R.id.btn_x_plus:
-                //    cam.lookAt(++lookX,lookY,lookZ);
-                    instance.transform.rotate(1,0,0,10);
+                //    GDXCam.lookAt(++lookX,lookY,lookZ);
+                //    instance.transform.rotate(1,0,0,10);
+                    if(SensorData.getInstance().IsStarted() == false)
+                        SensorData.getInstance().startSensing(context);
                     break;
                 case R.id.btn_y_plus:
-                //    cam.lookAt(lookX,++lookY,lookZ);
-                    instance.transform.rotate(0,1,0,10);
+                //    GDXCam.lookAt(lookX,++lookY,lookZ);
+                //    instance.transform.rotate(0,1,0,10);
+                    if(SensorData.getInstance().IsStarted())
+                        SensorData.getInstance().stopSensing();
                     break;
                 case R.id.btn_z_plus:
-                //    cam.lookAt(lookX,lookY,++lookZ);
-                    instance.transform.rotate(0,0,1,10);
+                    GDXCam.lookAt(lookX,lookY,++lookZ);
+                //    instance.transform.rotate(0,0,1,10);
                     break;
                 case R.id.btn_x_minus:
-                //    cam.lookAt(--lookX,lookY,lookZ);
-                    instance.transform.rotate(1,0,0,-10);
+                    GDXCam.lookAt(--lookX,lookY,lookZ);
+                //    instance.transform.rotate(1,0,0,-10);
                     break;
                 case R.id.btn_y_minus:
-                //    cam.lookAt(lookX,--lookY,lookZ);
-                    instance.transform.rotate(0,1,0,-10);
+                    GDXCam.lookAt(lookX,--lookY,lookZ);
+                //    instance.transform.rotate(0,1,0,-10);
                     break;
                 case R.id.btn_z_minus:
-               //     cam.lookAt(lookX,lookY,--lookZ);
-                    instance.transform.rotate(0,0,1,-10);
+                    GDXCam.lookAt(lookX,lookY,--lookZ);
+               //     instance.transform.rotate(0,0,1,-10);
                     break;
             }
+            showLookAt();
         }
+    }
+    private void showLookAt(){
+        Components.x_view.setText("" + lookX);
+        Components.y_view.setText("" + lookY);
+        Components.z_view.setText("" + lookZ);
+
     }
 
 }

@@ -21,6 +21,8 @@ public class SensorData implements SensorEventListener {
     private float oldAcceleration[];
     private float newMat[];
 
+    private float Quat[];
+
     private BufferAlgo1 accelBufferAlgo;
     private BufferAlgo1 magnetBufferAlgo;
 
@@ -29,6 +31,7 @@ public class SensorData implements SensorEventListener {
 
     private Sensor sensorAcce;
     private Sensor sensorMagn;
+    private Sensor sensorRot;
 
     private static SensorData instance=new SensorData();
 
@@ -55,6 +58,10 @@ public class SensorData implements SensorEventListener {
                 SensorManager.SENSOR_DELAY_GAME);
         sensorMan.registerListener(this, sensorMagn,
                 SensorManager.SENSOR_DELAY_GAME);
+
+       /* sensorRot= sensorMan.getSensorList(Sensor.TYPE_ROTATION_VECTOR).get(0);
+        sensorMan.registerListener(this, sensorRot,
+                SensorManager.SENSOR_DELAY_GAME);*/
         Started=true;
     }
 
@@ -96,14 +103,18 @@ public class SensorData implements SensorEventListener {
                     oldOrientation = orientation;
                 }
 
+          /*  if(type == Sensor.TYPE_ROTATION_VECTOR) {
+               SensorManager.getQuaternionFromVector(Quat,evt.values);
+                InvokeQuatEvent();
+            }*/
                 if ((type == Sensor.TYPE_MAGNETIC_FIELD)
                         || (type == Sensor.TYPE_ACCELEROMETER)) {
                     newMat = new float[16];
                     SensorManager.getRotationMatrix(newMat, null,
                             oldAcceleration, oldOrientation);
                     SensorManager.remapCoordinateSystem(newMat,
-                            SensorManager.AXIS_Y,
-                            SensorManager.AXIS_MINUS_X, newMat);
+                            SensorManager.AXIS_X,
+                            SensorManager.AXIS_Z, newMat);
                     InvokeRoationEvent();
                 }
                 clear.release();
@@ -116,6 +127,11 @@ public class SensorData implements SensorEventListener {
         }
     }
 
+    private void InvokeQuatEvent(){
+        for(HeadRotationInterface listener : RotationListeners){
+            listener.onQuaternionChanged(Quat);
+        }
+    }
     public void registerRotationListener(HeadRotationInterface listener){
         RotationListeners.add(listener);
     }
