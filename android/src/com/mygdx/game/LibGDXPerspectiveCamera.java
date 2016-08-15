@@ -14,8 +14,8 @@ public class LibGDXPerspectiveCamera extends PerspectiveCamera implements HeadRo
     private boolean geo ;
     private Context context;
 
-    private float[] lookAtVector = new float[4];
-    private float[] upVector = new float[4];
+    private float[] lookAtVector = { 0f,0f,-1000,1f};
+    private float[] upVector = { 0f,1f,0f,0f};
     private float[] positionVector= { 0f, 0f, 0f};
 
     private ModelCreateListener modelMaker;
@@ -31,7 +31,7 @@ public class LibGDXPerspectiveCamera extends PerspectiveCamera implements HeadRo
         this.far=1000f;
         this.near=1f;
         this.position.set(0f, 0f, 0f);
-        this.lookAt(0f, 0f, -100f);
+        this.lookAt(0f, 0f, -far);
         this.up.set(0f, 1f, 0f);
     }
 
@@ -39,6 +39,12 @@ public class LibGDXPerspectiveCamera extends PerspectiveCamera implements HeadRo
         this.update();
         this.up.set(upVector[0], upVector[1], upVector[2]);
         this.lookAt(lookAtVector[0], lookAtVector[1], lookAtVector[2]);
+    }
+
+    public void setLookAtVector(float x,float y,float z){
+        lookAtVector[0]=x;
+        lookAtVector[1]=y;
+        lookAtVector[2]=z;
     }
 
     public void setModelMaker(ModelCreateListener modelMaker){
@@ -65,8 +71,10 @@ public class LibGDXPerspectiveCamera extends PerspectiveCamera implements HeadRo
      //   Matrix4 matT = new Matrix4(RotationMat).tra();
         //  float[] newLookAt = { 0, 0, -far, 1 };
         Matrix.transposeM(traMat,0,RotationMat,0);
-        float[] newLookAt = { 0f, 10f, 0f, 1 };
-        float[] newUp = { 0, 0, 1, 1 };
+        float[] newLookAt = { 0f, 0f, -far, 1 };
+        float[] newUp = { 0, 1, 0, 1 };
+    //    float[] newLookAt = { 0f, 10f, 0f, 1 };
+    //    float[] newUp = { 0, 0, 1, 1 };
 
         Matrix.multiplyMV(lookAtVector,0,traMat,0,newLookAt,0);
         Matrix.multiplyMV(upVector,0,traMat,0,newUp,0);

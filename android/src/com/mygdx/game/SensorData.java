@@ -113,8 +113,8 @@ public class SensorData implements SensorEventListener {
                     SensorManager.getRotationMatrix(newMat, null,
                             oldAcceleration, oldOrientation);
                     SensorManager.remapCoordinateSystem(newMat,
-                            SensorManager.AXIS_X,
-                            SensorManager.AXIS_Z, newMat);
+                            SensorManager.AXIS_Y,
+                            SensorManager.AXIS_MINUS_X, newMat);
                     InvokeRoationEvent();
                 }
                 clear.release();

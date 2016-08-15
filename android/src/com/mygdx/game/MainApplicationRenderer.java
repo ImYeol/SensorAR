@@ -44,9 +44,9 @@ public class MainApplicationRenderer implements ApplicationListener,ModelCreateL
 
     private RenderModelList RenderModels;
 
-    private float lookX=10;
-    private float lookY=10;
-    private float lookZ=10;
+    private float lookX=0;
+    private float lookY=0;
+    private float lookZ=0;
 
 
     public MainApplicationRenderer(Context context){
@@ -71,7 +71,8 @@ public class MainApplicationRenderer implements ApplicationListener,ModelCreateL
 
     @Override
     public void MakeDefaultModels(){
-        assets.load("arrow.g3db",Model.class);
+    //    assets.load("arrow.g3db",Model.class);
+        assets.load("squirtle.g3db",Model.class);
         loading=true;
         ModelBuilder modelBuilder = new ModelBuilder();
         model = modelBuilder.createBox(5f, 5f, 5f,
@@ -81,10 +82,11 @@ public class MainApplicationRenderer implements ApplicationListener,ModelCreateL
 
     @Override
     public void MakeModels(float mx,float my,float mz){
-        assets.load("arrow.g3db",Model.class);
+      //  assets.load("arrow.g3db",Model.class);
+        assets.load("data/Dino.obj",Model.class);
         loading=true;
         ModelBuilder modelBuilder = new ModelBuilder();
-        model = modelBuilder.createBox(10f, 10f, 10f,
+        model = modelBuilder.createBox(5f, 5f, 5f,
                 new Material(ColorAttribute.createDiffuse(Color.GREEN)),
                 VertexAttributes.Usage.Position | VertexAttributes.Usage.Normal);
     }
@@ -95,17 +97,18 @@ public class MainApplicationRenderer implements ApplicationListener,ModelCreateL
     }
 
     private void doneLoading(){
-     //   Log.d(TAG,"doneLoading");
-        float[] modelCoord={0f,1f,1f};
+        float[] modelCoord={0f,0f,-10f};
         //modelCoord=GDXCam.getModelCoord();
-        arrow= assets.get("arrow.g3db",Model.class);
+    //    arrow= assets.get("arrow.g3db",Model.class);
+        arrow= assets.get("squirtle.g3db",Model.class);
         instance= new ModelInstance(arrow);
         instance.transform.setToTranslation(modelCoord[0], modelCoord[1], modelCoord[2]);
-        instance.transform.rotate(0, 1, 0, -20);
+        instance.transform.rotate(0, 1, 0, 180);
+    /*    instance.transform.rotate(0, 1, 0, -20);
         instance.transform.rotate(0, 0, 1, 130);
         instance.transform.rotate(1,0,0,-10);
-        instance.transform.rotate(0,1,0,10);
-        instance.transform.scale(5f, 5f, 5f);
+        instance.transform.rotate(0,1,0,10);*/
+        instance.transform.scale(2f, 2f, 2f);
 
 
         box= new ModelInstance(model);
@@ -113,7 +116,7 @@ public class MainApplicationRenderer implements ApplicationListener,ModelCreateL
         RenderModels.add(instance);
         RenderModels.add(box);
         loading=false;
-        //SensorData.getInstance().startSensing(context);
+        SensorData.getInstance().startSensing(context);
         Log.d(TAG,"doneLoading");
     }
 
@@ -167,31 +170,31 @@ public class MainApplicationRenderer implements ApplicationListener,ModelCreateL
         public void onClick(View v) {
             switch (v.getId()){
                 case R.id.btn_x_plus:
-                //    GDXCam.lookAt(++lookX,lookY,lookZ);
+                    GDXCam.setLookAtVector(++lookX, lookY, lookZ);
                 //    instance.transform.rotate(1,0,0,10);
-                    if(SensorData.getInstance().IsStarted() == false)
-                        SensorData.getInstance().startSensing(context);
+               /*     if(SensorData.getInstance().IsStarted() == false)
+                        SensorData.getInstance().startSensing(context);*/
                     break;
                 case R.id.btn_y_plus:
-                //    GDXCam.lookAt(lookX,++lookY,lookZ);
+                    GDXCam.setLookAtVector(lookX,++lookY,lookZ);
                 //    instance.transform.rotate(0,1,0,10);
-                    if(SensorData.getInstance().IsStarted())
-                        SensorData.getInstance().stopSensing();
+                /*    if(SensorData.getInstance().IsStarted())
+                        SensorData.getInstance().stopSensing();*/
                     break;
                 case R.id.btn_z_plus:
-                    GDXCam.lookAt(lookX,lookY,++lookZ);
+                    GDXCam.setLookAtVector(lookX,lookY,++lookZ);
                 //    instance.transform.rotate(0,0,1,10);
                     break;
                 case R.id.btn_x_minus:
-                    GDXCam.lookAt(--lookX,lookY,lookZ);
+                    GDXCam.setLookAtVector(--lookX,lookY,lookZ);
                 //    instance.transform.rotate(1,0,0,-10);
                     break;
                 case R.id.btn_y_minus:
-                    GDXCam.lookAt(lookX,--lookY,lookZ);
+                    GDXCam.setLookAtVector(lookX,--lookY,lookZ);
                 //    instance.transform.rotate(0,1,0,-10);
                     break;
                 case R.id.btn_z_minus:
-                    GDXCam.lookAt(lookX,lookY,--lookZ);
+                    GDXCam.setLookAtVector(lookX,lookY,--lookZ);
                //     instance.transform.rotate(0,0,1,-10);
                     break;
             }
